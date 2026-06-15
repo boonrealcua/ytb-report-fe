@@ -1,0 +1,31 @@
+# macOS / editor files
+.DS_Store
+._*
+.idea/
+.vscode/
+
+# Node/runtime dependencies
+node_modules/
+.npm/
+.pnpm-store/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+tmp/
+temp/
+.cache/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Build/helper scratch files
+scripts/
+
+# Output folder: keep final Excel deliverables, ignore other generated previews/scratch
+outputs/**
+!outputs/**/
+!outputs/**/*.xlsx
