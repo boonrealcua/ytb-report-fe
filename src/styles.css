@@ -104,3 +104,10 @@ textarea { min-height: 120px; resize: vertical; border: 1px solid #d9deea; borde
   .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .report-section { grid-template-columns: 1fr; }
 }
+.youtube-session-card { margin-top: 14px; min-height: 64px; display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; border: 1px solid #d9deea; border-radius: 8px; padding: 10px 12px; background: #f8fafc; }
+.youtube-session-card img, .youtube-session-placeholder { width: 48px; height: 48px; border-radius: 8px; }
+.youtube-session-card img { object-fit: cover; }
+.youtube-session-placeholder { display: grid; place-items: center; background: #fee2e2; color: #dc2626; }
+.youtube-session-card strong { display: block; font-size: 14px; }
+.youtube-session-card span { display: block; margin-top: 3px; color: #6b7280; font-size: 13px; }
+button:disabled { cursor: not-allowed; opacity: .65; }

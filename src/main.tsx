@@ -20,6 +20,9 @@ import {
   Settings,
   Users,
 } from 'lucide-react';
+import { getGoogleClientId, requestYoutubeAccessToken } from './googleOAuth';
+import { fetchConnectedYoutubeChannel } from './youtubeApi';
+import { clearYoutubeSession, getYoutubeSession, saveYoutubeSession, type YoutubeSession } from './youtubeSession';
 import { formatClientDateTime, formatCompactNumber, formatPercent, formatUsd } from './utils';
 import './styles.css';
 
@@ -119,7 +122,40 @@ const syncLogs = [
 
 function App() {
   const reportRef = React.useRef<HTMLDivElement>(null);
-  const [exportState, setExportState] = React.useState('Sẵn sàng xuất ảnh');
+  const [exportState, setExportState] = React.useState('Ready to export image');
+  const [youtubeSession, setYoutubeSession] = React.useState<YoutubeSession | null>(() => getYoutubeSession());
+  const [youtubeStatus, setYoutubeStatus] = React.useState(youtubeSession ? 'YouTube connected' : 'YouTube not connected');
+  const [isConnectingYoutube, setIsConnectingYoutube] = React.useState(false);
+
+  async function connectYoutube() {
+    const clientId = getGoogleClientId();
+    if (!clientId) {
+      setYoutubeStatus('Missing VITE_GOOGLE_CLIENT_ID at FE build time');
+      return;
+    }
+
+    setIsConnectingYoutube(true);
+    setYoutubeStatus('Connecting Google...');
+    try {
+      const token = await requestYoutubeAccessToken(clientId);
+      setYoutubeStatus('Loading YouTube channel...');
+      const channel = await fetchConnectedYoutubeChannel(token.accessToken);
+      const session = { ...token, channel };
+      saveYoutubeSession(session);
+      setYoutubeSession(session);
+      setYoutubeStatus('YouTube connected');
+    } catch (error) {
+      setYoutubeStatus(error instanceof Error ? error.message : 'YouTube connection failed');
+    } finally {
+      setIsConnectingYoutube(false);
+    }
+  }
+
+  function disconnectYoutube() {
+    clearYoutubeSession();
+    setYoutubeSession(null);
+    setYoutubeStatus('YouTube disconnected');
+  }
 
   async function exportReport(format: 'png' | 'jpeg') {
     if (!reportRef.current) return;
@@ -176,6 +212,26 @@ function App() {
           <div className="toolbar">
             <label className="search-box"><Search size={17} /><input placeholder="Tìm theo mã kênh hoặc tên kênh" /></label>
             <button className="ghost-button"><Link2 size={17} /> Kết nối YouTube</button>
+          </div>
+          <div className="youtube-session-card">
+            {youtubeSession ? (
+              <>
+                {youtubeSession.channel.thumbnailUrl ? <img src={youtubeSession.channel.thumbnailUrl} alt="" /> : <div className="youtube-session-placeholder"><PlaySquare size={22} /></div>}
+                <div>
+                  <strong>{youtubeSession.channel.title}</strong>
+                  <span>{youtubeStatus} - Token expires: {formatClientDateTime(new Date(youtubeSession.expiresAt).toISOString())}</span>
+                </div>
+                <button className="ghost-button" onClick={disconnectYoutube}>Disconnect</button>
+              </>
+            ) : (
+              <>
+                <div className="youtube-session-placeholder"><PlaySquare size={22} /></div>
+                <div>
+                  <strong>Google YouTube session</strong>
+                  <span>{youtubeStatus}</span>
+                </div>
+              </>
+            )}
           </div>
           <div className="table-wrap">
             <table>
