@@ -22,10 +22,9 @@ temp/
 .env.*
 !.env.example
 
-# Build/helper scratch files
-scripts/
-
-# Output folder: keep final Excel deliverables, ignore other generated previews/scratch
-outputs/**
-!outputs/**/
-!outputs/**/*.xlsx
+# Build outputs
+dist/
+coverage/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
