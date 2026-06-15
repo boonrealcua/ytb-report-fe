@@ -211,7 +211,7 @@ function App() {
           <PanelHeader title="Danh sách kênh" subtitle="Quản lý mã kênh, OAuth và trạng thái đồng bộ." action="Thêm kênh" />
           <div className="toolbar">
             <label className="search-box"><Search size={17} /><input placeholder="Tìm theo mã kênh hoặc tên kênh" /></label>
-            <button className="ghost-button"><Link2 size={17} /> Kết nối YouTube</button>
+            <button className="ghost-button" onClick={connectYoutube} disabled={isConnectingYoutube}><Link2 size={17} /> {isConnectingYoutube ? 'Connecting' : 'Connect YouTube'}</button>
           </div>
           <div className="youtube-session-card">
             {youtubeSession ? (
